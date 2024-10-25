@@ -1,214 +1,219 @@
-{% extends "layout.html" %}
-
-{% block body %}
+{% extends "layout.html" %} {% block body %}
 
 <body>
-    <div class="content">
-        <h1>To Do</h1>
-        <h2>Tasks</h2>
+  <div class="content">
+    <h1>To Do</h1>
+    <h2>Tasks</h2>
 
-        <div class="output">
-            {% if tasks %}
-            <ul id="taskList">
-                {% for task in tasks|sort(attribute='Updated', reverse= True) %}
-                <li>
-                    <input type="checkbox" class="complete-checkbox">
-                    <p class="task-title" contenteditable="true">{{ task['Title'] }}</p>
-                    <button class="update-button" style="visibility:hidden;">Update</button>
-                    <input type="hidden" class="task-id" value="{{ task['id'] }}">
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            No tasks added yet.
-            {% endif %}
-        </div>
-
-        <h3>Completed</h3>
-        <div class="completed-output">
-            <ul id="completedTaskList">
-                {% for task in completed_tasks %}
-                <li>
-                    <input type="checkbox" class="incomplete-checkbox" checked>
-                    <p class="completed-task-title">{{ task['Title'] }}</p>
-                    <input type="hidden" class="task-id" value="{{ task['id'] }}">
-
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+    <div class="output">
+      {% if tasks %}
+      <ul id="taskList">
+        {% for task in tasks|sort(attribute='Updated', reverse= True) %}
+        <li>
+          <input type="checkbox" class="complete-checkbox" />
+          <p class="task-title" contenteditable="true">{{ task['Title'] }}</p>
+          <button class="update-button" style="visibility: hidden">
+            Update
+          </button>
+          <input type="hidden" class="task-id" value="{{ task['id'] }}" />
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %} <p style="color:white;">No tasks added yet.</p>{% endif %}
     </div>
 
-    <div class="input-container">
-        <form method="POST">
-            <input type="text" id="taskInput" name="name" autocomplete="off" required placeholder="Enter a task..." />
-            <button type="submit" id="submitButton" disabled>Save</button>
-        </form>
+    <h3>Completed</h3>
+    <div class="completed-output">
+      <ul id="completedTaskList">
+        {% for task in completed_tasks %}
+        <li>
+          <input type="checkbox" class="incomplete-checkbox" checked />
+          <p class="completed-task-title">{{ task['Title'] }}</p>
+          <input type="hidden" class="task-id" value="{{ task['id'] }}" />
+        </li>
+        {% endfor %}
+      </ul>
     </div>
+  </div>
 
-    <script>
+  <div class="input-container">
+    <form method="POST">
+      <input
+        type="text"
+        id="taskInput"
+        name="name"
+        autocomplete="off"
+        required
+        placeholder="Enter a task..."
+      />
+      <button type="submit" id="submitButton" disabled>Save</button>
+    </form>
+  </div>
 
-        // get the input from input field
-        const inputField = document.getElementById('taskInput');
-        // button for adding the task
-        const submitButton = document.getElementById('submitButton');
-        console.log('clicked')
+  <script>
+    // get the input from input field
+    const inputField = document.getElementById("taskInput");
+    // button for adding the task
+    const submitButton = document.getElementById("submitButton");
+    console.log("clicked");
 
+    // this function checks if the input box is empty or not
+    function toggleButtonState() {
+      // If the input box is empty, disable the button. If it's not empty, make the button clickable.
+      submitButton.disabled = inputField.value.trim() === "";
+    }
 
-        // this function checks if the input box is empty or not
-        function toggleButtonState() {
-            // If the input box is empty, disable the button. If it's not empty, make the button clickable.
-            submitButton.disabled = inputField.value.trim() === '';
+    // listen for when the user types or changes the input box
+    inputField.addEventListener("keyup", toggleButtonState);
+    inputField.addEventListener("input", toggleButtonState);
+
+    //find all the task titles in the list
+    document.querySelectorAll(".task-title").forEach((taskTitle) => {
+      //get the parent list item of the task title
+      const parentLi = taskTitle.parentElement;
+      // get the button to update the task title
+      const updateButton = parentLi.querySelector(".update-button");
+      // get the checkbox for marking the task as complete
+      const completeCheckbox = parentLi.querySelector(".complete-checkbox");
+      //get the task ID
+      const taskId = parentLi.querySelector(".task-id").value;
+
+      // when  user makes changes on the task title, show or hide the update button
+      taskTitle.addEventListener("input", function () {
+        // gets the new tite the user typed
+        const newValue = taskTitle.innerText.trim();
+
+        //if newValue is emphty or the same as the original value hide the update button otherwise, show it
+        if (newValue === "" || newValue === taskTitle.dataset.original) {
+          updateButton.style.visibility = "hidden";
+        } else {
+          updateButton.style.visibility = "visible";
         }
+      });
 
-        // listen for when the user types or changes the input box
-        inputField.addEventListener('keyup', toggleButtonState);
-        inputField.addEventListener('input', toggleButtonState);
+      //save the original title when the page loads
+      taskTitle.dataset.original = taskTitle.innerText;
 
-        //find all the task titles in the list
-        document.querySelectorAll('.task-title').forEach(taskTitle => {
-            //get the parent list item of the task title
-            const parentLi = taskTitle.parentElement;
-            // get the button to update the task title
-            const updateButton = parentLi.querySelector('.update-button');
-            // get the checkbox for marking the task as complete
-            const completeCheckbox = parentLi.querySelector('.complete-checkbox');
-            //get the task ID
-            const taskId = parentLi.querySelector('.task-id').value;
+      // If the user presses the enter key or click the update button
+      taskTitle.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault(); // stops the enter key to produce nextliine
+          // Click the update button if it's not disabled
+          if (!updateButton.disabled) {
+            updateButton.click();
+          }
+        }
+      });
 
-            // when  user makes changes on the task title, show or hide the update button
-            taskTitle.addEventListener('input', function() {
-                // gets the new tite the user typed
-                const newValue = taskTitle.innerText.trim();
+      // When the user click (to mark complete)
+      completeCheckbox.addEventListener("change", async function () {
+        const isChecked = completeCheckbox.checked; // Check if the checkbox is checked
+        if (isChecked) {
+          // if checked, send a request to mark the task as complete
+          const response = await fetch(`/complete/${taskId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: taskId }), // sends the task ID
+          });
 
-                //if newValue is emphty or the same as the original value hide the update button otherwise, show it
-                if (newValue === '' || newValue === taskTitle.dataset.original) {
-                    updateButton.style.visibility = 'hidden'
-                }
-                else {
-                    updateButton.style.visibility = 'visible'
-                }
-            });
-
-            //save the original title when the page loads
-            taskTitle.dataset.original = taskTitle.innerText;
-
-            // If the user presses the enter key or click the update button
-            taskTitle.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
-                    event.preventDefault(); // stops the enter key to produce nextliine
-                    // Click the update button if it's not disabled
-                    if (!updateButton.disabled) {
-                        updateButton.click();
-                    }
-                }
-            });
-
-            // When the user click (to mark complete)
-            completeCheckbox.addEventListener('change', async function() {
-
-                const isChecked = completeCheckbox.checked; // Check if the checkbox is checked
-                if (isChecked) {
-                    // if checked, send a request to mark the task as complete
-                    const response = await fetch(`/complete/${taskId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ id: taskId }) // sends the task ID
-                    });
-
-                    if (response.ok) { //checks if the response is okay
-                        // get the list where completed tasks go
-                        const completedTaskList = document.getElementById('completedTaskList');
-                        // create a new list for the completed tasks
-                        const completedTaskLi = document.createElement('li');
-                        completedTaskLi.innerHTML = `
+          if (response.ok) {
+            //checks if the response is okay
+            // get the list where completed tasks go
+            const completedTaskList =
+              document.getElementById("completedTaskList");
+            // create a new list for the completed tasks
+            const completedTaskLi = document.createElement("li");
+            completedTaskLi.innerHTML = `
                             <input type="checkbox" class="incomplete-checkbox" checked>
                             <p class="completed-task-title">${taskTitle.innerText}</p>
                             <input type="hidden" class="task-id" value="${taskId}">
                         `;
-                        // adds the completed task to the completed tasks list
-                        completedTaskList.appendChild(completedTaskLi);
-                        parentLi.remove();
+            // adds the completed task to the completed tasks list
+            completedTaskList.appendChild(completedTaskLi);
+            parentLi.remove();
 
-                        addIncompleteCheckboxListener(completedTaskLi);
-                    } else {
-                        console.error('Error completing task');
-                    }
-                }
-            });
+            addIncompleteCheckboxListener(completedTaskLi);
+          } else {
+            console.error("Error completing task");
+          }
+        }
+      });
 
-
-            // When user clicks the update button
-            // get the new title the user typed
-            // sends a request to update the task title
-            updateButton.addEventListener('click', async function() {
-                const updatedTitle = taskTitle.innerText;
-                const response = await fetch(`/update/${taskId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ title: updatedTitle }) // Send the new title
-                });
-
-                if (response.ok) {
-                    console.log('Task updated successfully'); // success message
-                    taskTitle.dataset.original = updatedTitle; // Updates the original title to the new one
-                    updateButton.style.visibility = 'hidden'; // hide update button
-                    updateButton.disabled = true; // disable the update button
-                } else {
-                    console.error('Error updating task'); // if there's an error, show it in the console
-                }
-
-
-                //reloads the page automatically but not great for user exp.
-                location.reload()
-
-            });
+      // When user clicks the update button
+      // get the new title the user typed
+      // sends a request to update the task title
+      updateButton.addEventListener("click", async function () {
+        const updatedTitle = taskTitle.innerText;
+        const response = await fetch(`/update/${taskId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: updatedTitle }), // Send the new title
         });
 
-        // Function to add listener for incomplete checkboxes
-        function addIncompleteCheckboxListener(completedTaskLi){
-            const incompleteCheckbox = completedTaskLi.querySelector('.incomplete-checkbox');
-            const taskId = completedTaskLi.querySelector('.task-id').value;
+        if (response.ok) {
+          console.log("Task updated successfully"); // success message
+          taskTitle.dataset.original = updatedTitle; // Updates the original title to the new one
+          updateButton.style.visibility = "hidden"; // hide update button
+          updateButton.disabled = true; // disable the update button
+        } else {
+          console.error("Error updating task"); // if there's an error, show it in the console
+        }
 
-            incompleteCheckbox.addEventListener('change', async function () {
-                if (!incompleteCheckbox.checked) {
-                    // Send a request to mark the task as incomplete
-                    const response = await fetch(`/incomplete/${taskId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: taskId }) // sends the task ID
-                    });
+        //reloads the page automatically but not great for user exp.
+        location.reload();
+      });
+    });
 
-                    if (response.ok) {
-                        // get the list where incomplete tasks go
-                        const taskList = document.getElementById('taskList');
-                        // create a new list item for the incomplete task
-                        const taskLi = document.createElement('li');
-                        taskLi.innerHTML = `
+    // Function to add listener for incomplete checkboxes
+    function addIncompleteCheckboxListener(completedTaskLi) {
+      const incompleteCheckbox = completedTaskLi.querySelector(
+        ".incomplete-checkbox"
+      );
+      const taskId = completedTaskLi.querySelector(".task-id").value;
+
+      incompleteCheckbox.addEventListener("change", async function () {
+        if (!incompleteCheckbox.checked) {
+          // Send a request to mark the task as incomplete
+          const response = await fetch(`/incomplete/${taskId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: taskId }), // sends the task ID
+          });
+
+          if (response.ok) {
+            // get the list where incomplete tasks go
+            const taskList = document.getElementById("taskList");
+            // create a new list item for the incomplete task
+            const taskLi = document.createElement("li");
+            taskLi.innerHTML = `
                             <input type="checkbox" class="complete-checkbox">
-                            <p class="task-title" contenteditable="true">${completedTaskLi.querySelector('.completed-task-title').innerText}</p>
+                            <p class="task-title" contenteditable="true">${
+                              completedTaskLi.querySelector(
+                                ".completed-task-title"
+                              ).innerText
+                            }</p>
                             <button class="update-button" style="visibility:hidden;">Update</button>
                             <input type="hidden" class="task-id" value="${taskId}">
                         `;
-                        // adds the incomplete task to the incomplete tasks list
-                        taskList.insertBefore(taskLi, taskList.firstChild);
-                        completedTaskLi.remove();
-                    } else {
-                        console.error('Error marking task as incomplete');
-                    }
-                }
-            });
+            // adds the incomplete task to the incomplete tasks list
+            taskList.insertBefore(taskLi, taskList.firstChild);
+            completedTaskLi.remove();
+          } else {
+            console.error("Error marking task as incomplete");
+          }
         }
+      });
+    }
 
-        // Attach listeners for existing incomplete checkboxes
-        document.querySelectorAll('.incomplete-checkbox').forEach(checkbox => {
-            const parentLi = checkbox.parentElement;
-            addIncompleteCheckboxListener(parentLi);
-        });
-    </script>
+    // Attach listeners for existing incomplete checkboxes
+    document.querySelectorAll(".incomplete-checkbox").forEach((checkbox) => {
+      const parentLi = checkbox.parentElement;
+      addIncompleteCheckboxListener(parentLi);
+    });
+  </script>
 </body>
 {% endblock %}

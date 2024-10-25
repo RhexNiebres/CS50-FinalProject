@@ -1,234 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Character encoding for the document -->
+    <meta charset="UTF-8" />
+    <!-- Responsive design meta tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Task Input{% endblock %}</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-    <head>
-        <!-- Character encoding for the document -->
-        <meta charset="UTF-8">
-        <!-- Responsive design meta tag -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Task Input{% endblock %}</title>
-        <style>
-            * {
-                box-sizing: border-box;
-            }
+      body {
+        background: #181818  ;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+        text-align: center;
+      }
 
-            body {
-                background: white;
-                font-family: Arial, sans-serif;
-                display: flex;
-                flex-direction: column;
-                height: 100vh;
-                margin: 0;
-                text-align: center;
-            }
+      .content {
+        flex: 1;
+        padding: 20px;
+        min-width: 600px;
+        margin: auto;
+      }
 
-            .content {
-                flex: 1;
-                padding: 20px;
-                min-width: 600px;
-                margin: auto;
-            }
+      h1 {
+        text-align: center;
+        font-family: Arial, sans-serif;
+        border: 1px solid black;
+        border-radius: 10px;
+        width: 200px;
+        color: black;
+        font-weight: 900;
+        background-image: linear-gradient(to right, #e6edf8 ,#f5f7fc );
+      }
 
-            h1 {
-                text-align: center;
-                font-family: Arial, sans-serif;
-                border: 1px solid black;
-                border-radius: 10px;
-                width: 200px;
-                color: black;
-                font-weight: 900;
-                background-image: linear-gradient(to right, #ffe69d, #a7f2b2);
+      h2 {
+        font-family: Arial, sans-serif;
+        text-align: left;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px 15px;
+        width: 400px;
+        margin: 5px 0px;
+        font-size: 16px;
+        font-weight: 800;
+        background-image: linear-gradient(to right,#e6edf8 , #f5f7fc );
+        /* to be changed */
+        color: black;
+      }
 
-            }
+      h3 {
+        font-family: Arial, sans-serif;
+        text-align: left;
+        border: 1px solid black;
+        border-radius: 10px;
+        padding: 10px 15px;
+        width: 400px;
+        margin: 5px 0px;
+        font-size: 16px;
+        font-weight: 900;
+        background-image: linear-gradient(to right, #e1e7f6 , #f5f7fc);
+        /* to be changed */
+      }
 
-            h2 {
-                font-family: Arial, sans-serif;
-                text-align: left;
-                border: 1px solid black;
-                border-radius: 10px;
-                padding: 10px 15px;
-                width: 400px;
-                margin: 5px 0px;
-                font-size: 16px;
-                font-weight: 800;
-                background-image: linear-gradient(to right, #FFEFC1, #FFE599);
-                /* to be changed */
-                color: black;
-            }
+      p {
+        text-align: left;
+        border-radius: 10px;
+        padding: 10px 15px;
+        width: 400px;
+        margin: 5px 5px;
+      }
 
-            h3 {
-                font-family: Arial, sans-serif;
-                text-align: left;
-                border: 1px solid black;
-                border-radius: 10px;
-                padding: 10px 15px;
-                width: 400px;
-                margin: 5px 0px;
-                font-size: 16px;
-                font-weight: 900;
-                background-image: linear-gradient(to right, #d3f8d8, #a7f2b2);
-                /* to be changed */
-            }
+      .output {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 0px solid black;
+        border-radius: 10px;
+        background-color: 424243 ;
+        color: black;
+        list-style-type: none;
+      }
 
-            p {
-                text-align: left;
-                border-radius: 10px;
-                padding: 10px 15px;
-                width: 400px;
-                margin: 5px 5px;
+      .output ul {
+        list-style-type: none;
+        padding: 0;
+      }
 
-            }
+      li {
+        display: flex;
+        justify-content: space-between;
+        border: 1px solid black;
+        padding: 3px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        background-image: linear-gradient(to right, #e6edf8, #f5f7fc );
+        /* to be changed */
+        font-weight: 700;
+        padding: 0;
 
-            .output {
-                margin-bottom: 20px;
-                padding: 10px;
-                border: 0px solid black;
-                border-radius: 10px;
-                background-color: white;
-                color: black;
-                list-style-type: none;
-            }
+      }
 
-            .output ul {
-                list-style-type: none;
-                padding: 0;
+      .input-container {
+        padding: 10px;
+      }
 
-            }
+      .input-container form {
+        display: flex;
+        justify-content: space-between;
+      }
 
-            li {
-                display: flex;
-                justify-content: space-between;
-                border: 1px solid black;
-                padding: 3px;
-                margin-bottom: 15px;
-                border-radius: 10px;
-                background-image: linear-gradient(to right, #FFEFC1, #FFE599);
-                /* to be changed */
-                font-weight: 700;
+      .input-container input {
+        margin: auto;
+        border-radius: 30px;
+        width: 500px;
+        padding: 10px;
+        border: 3px solid #ccc;
+        transition: width 2s;
+      }
 
-            }
+      .input-container input:hover {
+        width: 900px;
+      }
 
-            .input-container {
-                padding: 10px;
-            }
+      .input-container button {
+        margin-left: 20px;
+        padding: 3px 25px;
+        cursor: pointer;
+        border: 1px solid grey;
+        background-color: #21b67e;
+        color: white;
+        border-radius: 25px;
+      }
 
-            .input-container form {
-                display: flex;
-                justify-content: space-between;
-            }
+      .input-container button:disabled,
+      .input-container button[disabled] {
+        border: 1px solid #999999;
+        background-color: #cccccc;
+        color: #666666;
+        cursor: not-allowed;
+      }
 
-            .input-container input {
-                margin: auto;
-                border-radius: 30px;
-                width: 500px;
-                padding: 10px;
-                border: 3px solid #ccc;
-                transition: width 2s;
-            }
+      .input-container button:hover:enabled {
+        background-image: linear-gradient(to right, #d3f8d8, #a7f2b2);
+        color: black;
+      }
 
-            .input-container input:hover {
-                width: 900px;
-            }
+      .update-button {
+        padding: 5px 10px;
+        background-color: #fdfefe;
+        color: black;
+        border: 1px solid black;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 70px;
+        height: 30px;
+        margin: auto;
+        font-weight: 900;
+      }
+
+      .update-button:hover {
+        background-color: #bac8ea;
+      }
+
+      .edit-input {
+        flex: 1;
+        margin: auto;
+        border-radius: 30px;
+        width: 70%;
+        padding: 5px;
+        display: none;
+      }
+
+      /* Style to make the checkbox circular and visible */
+      .complete-checkbox {
+        -webkit-appearance: none; /* Remove default styling for webkit browsers */
+        -moz-appearance: none; /* Remove default styling for Firefox */
+        appearance: none; /* Remove default styling */
+        width: 24px; /* Width of the checkbox */
+        height: 24px; /* Height of the checkbox */
+        border: 2px solid black; /* Border style */
+        border-radius: 50%; /* Make it circular */
+        outline: none; /* Remove outline on focus */
+        cursor: pointer; /* Pointer cursor on hover */
+        position: relative; /* Positioning for checkmark */
+        transition: "background" 0.3s; /* Smooth transition for background */
+        margin: auto;
+      }
+
+      /* Style for checked state */
+      .complete-checkbox:checked {
+        background-color: #e6edf8; /* Background color when checked */
+      }
+
+      /* Add a checkmark when checked */
+      .complete-checkbox:checked::after {
+        content: ""; /* Use empty content for checkmark */
+        position: absolute; /* Positioning */
+        left: 7px; /* Adjust position as necessary */
+        top: 2px; /* Adjust position as necessary */
+        width: 5px; /* Width of checkmark */
+        height: 10px; /* Height of checkmark */
+        border: solid black; /* Color of the checkmark */
+        border-width: 0 2px 2px 0; /* Styling to create the checkmark shape */
+        transform: rotate(45deg); /* Rotate to form checkmark */
+      }
+      .incomplete-checkbox {
+        -webkit-appearance: none; /* Remove default styling for webkit browsers */
+        -moz-appearance: none; /* Remove default styling for Firefox */
+        appearance: none; /* Remove default styling */
+        width: 24px; /* Width of the checkbox */
+        height: 24px; /* Height of the checkbox */
+        border: 2px solid black; /* Border style */
+        border-radius: 50%; /* Make it circular */
+        outline: none; /* Remove outline on focus */
+        cursor: pointer; /* Pointer cursor on hover */
+        position: relative; /* Positioning for checkmark */
+        transition: "background" 0.3s; /* Smooth transition for background */
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+
+      /* Style for checked state */
+      .incomplete-checkbox:checked {
+        background-color: #bac8ea ; /* Background color when checked */
+      }
+
+      /* Add a checkmark when checked */
+      .incomplete-checkbox:checked::after {
+        content: ""; /* Use empty content for checkmark */
+        position: absolute; /* Positioning */
+        left: 7px; /* Adjust position as necessary */
+        top: 2px; /* Adjust position as necessary */
+        width: 5px; /* Width of checkmark */
+        height: 10px; /* Height of checkmark */
+        border: solid black; /* Color of the checkmark */
+        border-width: 0 2px 2px 0; /* Styling to create the checkmark shape */
+        transform: rotate(45deg); /* Rotate to form checkmark */
+      }
+
+      .completed-output ul {
+        list-style-type: none;
+        padding: 0;
+
+      }
+
+      .completed-output p {
+        text-align: left;
+        border-radius: 10px;
+        padding: 10px 15px;
+        width: 500px;
+        margin: 5px 5px;
+      }
 
 
-            .input-container button {
-                margin-left: 20px;
-                padding: 3px 25px;
-                cursor: pointer;
-                border: 1px solid grey;
-                background-color: #21b67e;
-                color: white;
-                border-radius: 25px;
-            }
+      .completed-task-title {
+        text-decoration-line: line-through;
+      }
 
-            .input-container button:disabled,
-            .input-container button[disabled] {
-                border: 1px solid #999999;
-                background-color: #cccccc;
-                color: #666666;
-                cursor: not-allowed;
-            }
-
-            .input-container button:hover:enabled {
-                background-image: linear-gradient(to right, #d3f8d8, #a7f2b2);
-                color: black;
-            }
-
-            .update-button {
-                padding: 5px 10px;
-                background-color: #FFE599;
-                color: black;
-                border: 1px solid black;
-                border-radius: 5px;
-                cursor: pointer;
-                width: 70px;
-                height: 30px;
-                margin: auto;
-                font-weight: 900;
-            }
-
-            .update-button:hover {
-                background-color: #F2E3AB;
-            }
-
-            .edit-input {
-                flex: 1;
-                margin: auto;
-                border-radius: 30px;
-                width: 70%;
-                padding: 5px;
-                display: none;
-            }
-
-
-            input[type="checkbox"] {
- /* Remove default styling */
-    height:15px;
-    padding: 20px ;
-    border: 1px solid black;      /* Border */
-    border-radius: 50%;           /* Circular shape */
-    background-color: #f2e3ab;      /* Background color */
-    cursor: pointer;              /* Pointer cursor on hover */
-    outline: none;                /* Remove outline */
-
-}
-input[type="checkbox"]:hover
-{
-    background-color: #d3f8d8;
-}
+      [contenteditable] {
+        outline: 0px solid transparent;
+      }
+      .colored ul
+      {
+        color:white;
+      }
 
 
 
-            .completed-output ul {
-                list-style-type: none;
-                padding: 0;
+    </style>
+  </head>
 
-            }
-
-            .completed-output li {
-                display: flex;
-                justify-content: space-between;
-                border: 1px solid black;
-                padding: 3px;
-                margin-bottom: 15px;
-                border-radius: 10px;
-                background-image: linear-gradient(to right, #d3f8d8, #a7f2b2);
-                /* to be changed */
-            }
-            .completed-task-title
-            {
-                text-decoration-line: line-through;
-            }
-            [contenteditable] {
-  outline: 0px solid transparent;
-}
-
-
-        </style>
-    </head>
-
-    <body>
-        {% block body %}{% endblock %}
-    </body>
-
+  <body>
+    {% block body %}{% endblock %}
+  </body>
 </html>
